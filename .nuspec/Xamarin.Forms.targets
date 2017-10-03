@@ -1,7 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlGTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlCTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
-	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.FixedCreateCSharpManifestResourceName" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.GetTasksAbi" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 
 	<PropertyGroup>
@@ -15,7 +14,7 @@
 		<ProjectCapability Include="XamarinForms" />
 	</ItemGroup>
 
-	<!-- Check Tasks ABI -->
+	<!-- Check Tasks ABI and other validations -->
 	<PropertyGroup>
 		<_XFTargetsImportedAgain Condition="'$(_XFTargetsImported)'=='True'">True</_XFTargetsImportedAgain>
 		<_XFTargetsImported>True</_XFTargetsImported>
@@ -39,6 +38,11 @@
 			Text="Xamarin.Forms tasks do not match targets. Please ensure that all projects reference the same version of Xamarin.Forms, and if the error persists, please restart the IDE."
 			Code="XF002"
 			Condition="'$(_XFTasksAbi)' != '$(_XFTasksExpectedAbi)'" />
+
+		<Error
+			Text="Xamarin.Forms require msbuild. xbuild is no longer supported."
+			Code="XF003"
+			Condition="'$(MSBuildAssemblyVersion)' == ''" />
 	</Target>
 
 	<!-- XamlG -->
@@ -65,9 +69,9 @@
 		<ItemGroup>
 			<_XamlResources Include="@(EmbeddedResource)" Condition="'%(Extension)' == '.xaml' AND '$(DefaultLanguageSourceExtension)' == '.cs'"/>
 		</ItemGroup>
-		<FixedCreateCSharpManifestResourceName ResourceFiles="@(_XamlResources)" RootNamespace="$(RootNamespace)">
+		<CreateCSharpManifestResourceName ResourceFiles="@(_XamlResources)" RootNamespace="$(RootNamespace)">
 			<Output TaskParameter="ResourceFilesWithManifestResourceNames" ItemName="XamlFiles" />
-		</FixedCreateCSharpManifestResourceName>
+		</CreateCSharpManifestResourceName>
 		<ItemGroup>
 			<XamlGFiles Include="@(XamlFiles->'$(IntermediateOutputPath)%(ManifestResourceName).g$(DefaultLanguageSourceExtension)')"/>
 			<Compile Include="@(XamlGFiles)"/>
