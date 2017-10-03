@@ -38,7 +38,9 @@
 			Text="Xamarin.Forms tasks do not match targets. Please ensure that all projects reference the same version of Xamarin.Forms, and if the error persists, please restart the IDE."
 			Code="XF002"
 			Condition="'$(_XFTasksAbi)' != '$(_XFTasksExpectedAbi)'" />
+	</Target>
 
+	<Target Name="_ValidateMSBuild" BeforeTargets="_CheckForInvalidConfigurationAndPlatform">
 		<Error
 			Text="Xamarin.Forms require msbuild. xbuild is no longer supported."
 			Code="XF003"
